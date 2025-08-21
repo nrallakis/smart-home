@@ -8,13 +8,35 @@
         topic: home_assistant_states
         brokers: 192.168.1.11:9092
       steps:
-        - setHeader:
-            id: setHeader-d1b4
-            name: KafkaTopic
-            expression:
-              simple:
-                id: simple-3a5e
-                expression: ${jsonpath('$.attributes[\'device_class\'], 'other')}
+        - to:
+            id: to-a0c7
+            uri: kamelet:log-sink
+        - choice:
+            id: choice-device-class
+            when:
+              - id: when-09a7
+                expression:
+                  simple:
+                    id: simple-f62d
+                    expression: ${jsonpath('$.attributes.device_class')} != null
+                steps:
+                  - setHeader:
+                      id: setHeader-cf4e
+                      name: KafkaTopic
+                      expression:
+                        simple:
+                          id: simple-b84b
+                          expression: ${jsonpath('$.attributes.device_class')}
+            otherwise:
+              id: otherwise-806a
+              steps:
+                - setHeader:
+                    id: setHeader-8e69
+                    name: KafkaTopic
+                    expression:
+                      constant:
+                        id: constant-8454
+                        expression: other
         - setBody:
             id: setBody-cdb0
             expression:
@@ -22,13 +44,13 @@
                 id: simple-d030
                 expression: |
                   {
-                      "id": "${jsonpath('$[\'entity_id\']')}",
+                      "id": "${jsonpath('$.entity_id')}",
                       "type": "DeviceMeasurement",
-                      "name": "${jsonpath('$.attributes[\'friendly_name\']', 'Unknown Device')}",
-                      "measurementType": "${jsonpath('$.attributes[\'device_class\']', 'other')}",
-                      "numValue": ${jsonpath('$[\'state\']')},
-                      "unit": "${jsonpath('$.attributes[\'unit_of_measurement\']', '')}",
-                      "dateObserved": "${jsonpath('$[\'last_updated\']')}"
+                      "name": "${jsonpath('$.attributes.friendly_name')}",
+                      "measurementType": "${jsonpath('$.attributes.device_class', true)}",
+                      "numValue": ${jsonpath('$.state')},
+                      "unit": "${jsonpath('$.attributes.unit_of_measurement')}",
+                      "dateObserved": "${jsonpath('$.last_updated')}"
                   }
         - toD:
             id: toD-12bf
