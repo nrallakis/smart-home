@@ -14,7 +14,7 @@
             expression:
               simple:
                 id: simple-3a5e
-                expression: ${jsonpath('$.attributes.device_class')}
+                expression: ${jsonpath('$.attributes[\'device_class\'], 'other')}
         - setBody:
             id: setBody-cdb0
             expression:
@@ -22,13 +22,13 @@
                 id: simple-d030
                 expression: |
                   {
-                    "id": "${jsonpath('$.entity_id')}",
-                    "type": "DeviceMeasurement",
-                    "name": "${jsonpath('$.attributes.friendly_name')}",
-                    "measurementType": "${jsonpath('$.attributes.device_class', 'other')}",
-                    "numValue": ${jsonpath('$.state')},
-                    "unit": "${jsonpath('$.attributes.unit_of_measurement')}",
-                    "dateObserved": "${jsonpath('$.last_updated')}"
+                      "id": "${jsonpath('$[\'entity_id\']')}",
+                      "type": "DeviceMeasurement",
+                      "name": "${jsonpath('$.attributes[\'friendly_name\']', 'Unknown Device')}",
+                      "measurementType": "${jsonpath('$.attributes[\'device_class\']', 'other')}",
+                      "numValue": ${jsonpath('$[\'state\']')},
+                      "unit": "${jsonpath('$.attributes[\'unit_of_measurement\']', '')}",
+                      "dateObserved": "${jsonpath('$[\'last_updated\']')}"
                   }
         - toD:
             id: toD-12bf
@@ -72,4 +72,17 @@
       steps:
         - to:
             id: to-a845
+            uri: kamelet:log-sink
+- route:
+    id: Other consumer
+    nodePrefixId: route-b7a
+    from:
+      id: from-4fab
+      uri: kafka
+      parameters:
+        topic: other
+        brokers: 192.168.1.11:9092
+      steps:
+        - to:
+            id: to-df9b
             uri: kamelet:log-sink
