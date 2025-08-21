@@ -1,0 +1,75 @@
+- route:
+    id: Topic router
+    nodePrefixId: route-182
+    from:
+      id: from-eb99
+      uri: kafka
+      parameters:
+        topic: home_assistant_states
+        brokers: 192.168.1.11:9092
+      steps:
+        - setHeader:
+            id: setHeader-d1b4
+            name: KafkaTopic
+            expression:
+              simple:
+                id: simple-3a5e
+                expression: ${jsonpath('$.attributes.device_class')}
+        - setBody:
+            id: setBody-cdb0
+            expression:
+              simple:
+                id: simple-d030
+                expression: |
+                  {
+                    "id": "${jsonpath('$.entity_id')}",
+                    "type": "DeviceMeasurement",
+                    "name": "${jsonpath('$.attributes.friendly_name')}",
+                    "measurementType": "${jsonpath('$.attributes.device_class', 'other')}",
+                    "numValue": ${jsonpath('$.state')},
+                    "unit": "${jsonpath('$.attributes.unit_of_measurement')}",
+                    "dateObserved": "${jsonpath('$.last_updated')}"
+                  }
+        - toD:
+            id: toD-12bf
+            uri: >-
+              kamelet:kafka-not-secured-sink?bootstrapServers=192.168.1.11:9092&topic=${header.KafkaTopic}
+- route:
+    id: Temperature consumer
+    nodePrefixId: route-10c
+    from:
+      id: from-b299
+      uri: kafka
+      parameters:
+        topic: temperature
+        brokers: 192.168.1.11:9092
+      steps:
+        - to:
+            id: to-b925
+            uri: kamelet:log-sink
+- route:
+    id: Humidity consumer
+    nodePrefixId: route-11c
+    from:
+      id: from-b209
+      uri: kafka
+      parameters:
+        topic: humidity
+        brokers: 192.168.1.11:9092
+      steps:
+        - to:
+            id: to-b955
+            uri: kamelet:log-sink
+- route:
+    id: Connectivity consumer
+    nodePrefixId: route-844
+    from:
+      id: from-eea6
+      uri: kafka
+      parameters:
+        topic: data_rate
+        brokers: 192.168.1.11:9092
+      steps:
+        - to:
+            id: to-a845
+            uri: kamelet:log-sink
