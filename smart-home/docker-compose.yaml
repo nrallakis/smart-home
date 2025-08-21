@@ -1,8 +1,0 @@
-services:
-  smart-home:
-    image: smart-home
-    restart: always
-    ports:
-      - "8081:8080"
-    networks:
-      - karavan
