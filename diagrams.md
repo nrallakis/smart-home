@@ -18,3 +18,17 @@ flowchart TB
     A3 --> A
     A4 --> A
 ```
+
+```mermaid
+---
+config:
+  look: classic
+  theme: redux-color
+---
+sequenceDiagram
+  participant Sensors as Αισθητήρες
+  participant HomeAssistant as Home Assistant
+  participant Kafka as Kafka
+  Sensors ->> HomeAssistant: Αποστολή μετρήσεων
+  HomeAssistant ->> Kafka: Αποστολή κατάστασης
+```
