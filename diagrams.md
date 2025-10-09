@@ -32,3 +32,17 @@ sequenceDiagram
   Sensors ->> HomeAssistant: Αποστολή μετρήσεων
   HomeAssistant ->> Kafka: Αποστολή κατάστασης
 ```
+
+---
+config:
+  look: classic
+  theme: redux
+---
+sequenceDiagram
+    participant Superset as Apache Superset
+    participant Trino as Trino
+    participant Kafka as Kafka Topics
+    Superset->>Trino: SQL ερώτημα
+    Trino->>Kafka: Polling στα δεδομένα των topics
+    Kafka-->>Trino: Επιστροφή δεδομένων
+    Trino-->>Superset: Επιστροφή 
