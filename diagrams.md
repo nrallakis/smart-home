@@ -32,7 +32,7 @@ sequenceDiagram
   Sensors ->> HomeAssistant: Αποστολή μετρήσεων
   HomeAssistant ->> Kafka: Αποστολή κατάστασης
 ```
-
+```mermaid
 ---
 config:
   look: classic
@@ -45,4 +45,5 @@ sequenceDiagram
     Superset->>Trino: SQL ερώτημα
     Trino->>Kafka: Polling στα δεδομένα των topics
     Kafka-->>Trino: Επιστροφή δεδομένων
-    Trino-->>Superset: Επιστροφή 
+    Trino-->>Superset: Επιστροφή
+```
