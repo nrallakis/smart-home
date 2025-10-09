@@ -47,3 +47,20 @@ sequenceDiagram
     Kafka-->>Trino: Επιστροφή δεδομένων
     Trino-->>Superset: Επιστροφή
 ```
+```mermaid
+---
+config:
+  look: classic
+  theme: redux
+---
+flowchart TB
+    A1 --> B[Home Assistant Green]
+    A2 --> B
+    A3 --> B
+
+    subgraph Πηγές δεδομένων
+        A1[Αισθητήρες θερμοκρασίας]
+        A2[Συσκευές IoT]
+        A3[Συστήματα αυτοματισμού]
+    end
+```
