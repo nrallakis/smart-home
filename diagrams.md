@@ -5,18 +5,6 @@ flowchart TB
     B --> C[Επεξεργασία δεδομένων]
     C --> D[Ομοσπονδία δεδομένων]
     D --> E[Οπτικοποίηση δεδομένων]
-
-    subgraph Sources
-        A1[Αισθητήρες θερμοκρασίας]
-        A2[Συσκευές IoT]
-        A3[Συστήματα αυτοματισμού]
-        A4[Εξωτερικές βάσεις δεδομένων]
-    end
-
-    A1 --> A
-    A2 --> A
-    A3 --> A
-    A4 --> A
 ```
 
 ```mermaid
@@ -28,7 +16,7 @@ config:
 sequenceDiagram
   participant Sensors as Αισθητήρες
   participant HomeAssistant as Home Assistant
-  participant Kafka as Kafka
+  participant Kafka as Στρώμα ενσωμάτωσης
   Sensors ->> HomeAssistant: Αποστολή μετρήσεων
   HomeAssistant ->> Kafka: Αποστολή κατάστασης
 ```
@@ -62,5 +50,31 @@ flowchart TB
         A1[Αισθητήρες θερμοκρασίας]
         A2[Συσκευές IoT]
         A3[Συστήματα αυτοματισμού]
+    end
+```
+```mermaid
+---
+config:
+  look: classic
+  theme: redux
+---
+flowchart LR
+    A1 --Zigbee--> B[Home Assistant Green]
+    A2 --WiFi--> B
+    A3 --Wifi--> B
+    A4 --Wifi--> B
+    A5 --Wifi--> B
+    A6 --RF--> B
+    A7 --Zigbee--> B
+    
+
+    subgraph Πηγές δεδομένων
+        A1[Αισθητήρας θερμοκρασίας & υγρασίας]
+        A2[Αισθητήρας κατανάλωσης ρεύματος]
+        A3[Έξυπνη πρίζα]
+        A4[Σκούπα ρομποότ]
+        A5[Αφυγραντήρας]
+        A6[Αισθητήρες πόρτας]
+        A7[Έξυπνοι διακόπτες]
     end
 ```
