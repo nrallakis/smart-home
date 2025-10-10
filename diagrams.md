@@ -118,3 +118,24 @@ flowchart LR
     Kafka --> Processor[Στρώμα επεξεργασίας]
     Processor --> Kafka
 ```
+```mermaid
+sequenceDiagram
+  participant HomeAssistant as Home Assistant
+  participant Raw as Home Assistant Topic
+  participant Clean as Επεξεργασμένο Topic
+  participant P as Στρώμα επεξεργασίας
+  HomeAssistant ->> Raw: Αποστολή κατάστασης
+  P ->> Raw: Λήψη τελευταίων μηνυμάτων
+  Raw ->> P: Αποστολή μηνυμάτων
+  P ->> Clean: Επεξεργασία και αποστολή
+  box Kafka
+  participant Raw
+  participant Clean
+  end
+  box Producer
+  participant HomeAssistant
+  end
+  box Consumer
+  participant P
+  end
+```
