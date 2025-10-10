@@ -78,3 +78,43 @@ flowchart LR
         A7[Έξυπνοι διακόπτες]
     end
 ```
+
+```mermaid
+---
+config:
+  look: classic
+  theme: redux
+---
+flowchart LR
+    A[Στρώμα πηγών δεδομένων] -->Kafka
+
+    subgraph Kafka[Kafka Cluster]
+      subgraph Broker 3      
+        subgraph Topic N
+        end
+        subgraph Topic 2
+        end
+        subgraph Topic 1
+        end
+      end
+      subgraph Broker 2      
+        subgraph Topic N
+        end
+        subgraph Topic 2
+        end
+        subgraph Topic 1
+        end
+      end
+      subgraph Broker      
+        subgraph Topic N
+        end
+        subgraph Topic 2
+        end
+        subgraph Topic 1
+        end
+      end
+    end
+
+    Kafka --> Processor[Στρώμα επεξεργασίας]
+    Processor --> Kafka
+```
