@@ -119,15 +119,20 @@ flowchart LR
     Processor --> Kafka
 ```
 ```mermaid
+---
+config:
+  look: classic
+  theme: redux-color
+  layout: fixed
+---
 sequenceDiagram
   participant HomeAssistant as Home Assistant
   participant Raw as Home Assistant Topic
   participant Clean as Επεξεργασμένο Topic
   participant P as Στρώμα επεξεργασίας
   HomeAssistant ->> Raw: Αποστολή κατάστασης
-  P ->> Raw: Λήψη τελευταίων μηνυμάτων
-  Raw ->> P: Αποστολή μηνυμάτων
-  P ->> Clean: Επεξεργασία και αποστολή
+  Raw ->>+ P: Αποστολή μηνυμάτων
+  P ->>- Clean: Επεξεργασία και αποστολή
   box Kafka
   participant Raw
   participant Clean
