@@ -182,3 +182,41 @@ sequenceDiagram
     participant V
   end
 ```
+
+```mermaid
+---
+config:
+  look: classic
+  theme: redux
+---
+
+flowchart LR
+    subgraph Smart home
+        subgraph Στρώμα οπτικοποίησης
+            K[superset]
+        end
+        subgraph Ομοσπονδία δεδομένων
+            P[postgress]
+            T[trino]
+        end
+        subgraph Επεξεργασία δεδομένων
+            Ka[karavan]
+            Re[registry]
+        end
+        subgraph Eνσωμάτωση δεδομένων
+            B1[broker]
+            B2[broker-2]
+            B3[broker-3]
+            SR[schema-registry]
+            Co[connect]
+            CC[control-center]
+            DB[ksqldb-server]
+        end
+        subgraph Πηγές δεδομένων
+            H[Home Assistant]
+            D1[Συσκευή 1]
+            D2[Συσκευή 2]
+            DN[Συσκευή N]
+        end
+    end
+```
