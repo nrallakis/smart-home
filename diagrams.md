@@ -144,3 +144,41 @@ sequenceDiagram
   participant P
   end
 ```
+
+```mermaid
+---
+config:
+  look: classic
+  theme: redux-color
+  layout: fixed
+---
+sequenceDiagram
+  participant Raw as Home Assistant Topic
+  participant P as Topic router
+  participant Clean as Επεξεργασμένο Topic 1
+  participant Clean2 as Επεξεργασμένο Topic 2
+  participant Clean3 as Επεξεργασμένο Topic 3
+  participant V as Στρώμα οπτικοποίησης
+  Raw ->>+ P: Αποστολή μηνυμάτων
+  P ->> P: Επεξεργασία
+  P -->> Clean: Αποστολή δρομολογημένων μηνυμάτων
+  P -->> Clean2: Αποστολή δρομολογημένων μηνυμάτων
+  P -->>- Clean3: Αποστολή δρομολογημένων μηνυμάτων
+  Clean ->> V: Αποστολή επεξεργασμένων δεδομένων
+  Clean2 ->> V: Αποστολή επεξεργασμένων δεδομένων
+  Clean3 ->> V: Αποστολή επεξεργασμένων δεδομένων
+  box Kafka
+    participant Raw
+  end
+  box Kafka
+    participant Clean
+    participant Clean2
+    participant Clean3
+  end
+  box Apache Camel
+    participant P
+  end
+  box Visualization
+    participant V
+  end
+```
