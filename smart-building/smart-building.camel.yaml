@@ -1,110 +1,65 @@
 - route:
-    id: Topic router
-    nodePrefixId: route-182
+    id: ha-to-fiware
     from:
-      id: from-eb99
+      id: from664a
       uri: kafka
       parameters:
+        brokers: broker:29092
+        groupId: fiware-mapper
         topic: home_assistant_states
-        brokers: 192.168.1.11:9092
       steps:
-        - to:
-            id: to-a0c7
-            uri: kamelet:log-sink
-        - choice:
-            id: choice-device-class
-            when:
-              - id: when-09a7
-                expression:
-                  simple:
-                    id: simple-f62d
-                    expression: ${jsonpath('$.attributes.device_class')} != null
-                steps:
-                  - setHeader:
-                      id: setHeader-cf4e
-                      name: KafkaTopic
-                      expression:
-                        simple:
-                          id: simple-b84b
-                          expression: ${jsonpath('$.attributes.device_class')}
-            otherwise:
-              id: otherwise-806a
-              steps:
-                - setHeader:
-                    id: setHeader-8e69
-                    name: KafkaTopic
-                    expression:
-                      constant:
-                        id: constant-8454
-                        expression: other
+        - unmarshal:
+            id: unmarshal086b
+            json:
+              id: json2496
+              library: Jackson
         - setBody:
-            id: setBody-cdb0
+            id: setBody4b33
+            expression:
+              groovy:
+                id: groovy485f
+                expression: |
+                  def message = body instanceof List ? body[0] : body
+                  def data = message?.value ?: message
+                  if (data == null || data.attributes == null) { return null }
+
+                  def attr = data.attributes
+                  def entityId = data.entity_id
+                  def rawDate = data.last_updated ?: "2026-01-01T00:00:00Z"
+                  def cleanDate = rawDate.contains(".") ? rawDate.split("\\.")[0] + "Z" : rawDate
+                  def fiwareId = "urn:ngsi-ld:DeviceMeasurement:${entityId}"
+
+                  headers['CamelKafkaKey'] = entityId
+                  // This header is used for the dynamic topic name below
+                  headers['targetTopic'] = attr.device_class ?: "unknown"
+
+                  return [
+                    "id": fiwareId,
+                    "type": "DeviceMeasurement",
+                    "name": attr.friendly_name ?: "Unknown",
+                    "measurementType": headers['targetTopic'],
+                    "numValue": data.state?.isNumber() ? data.state.toDouble() : 0.0,
+                    "unit": attr.unit_of_measurement ?: "",
+                    "dateObserved": cleanDate
+                  ]
+        - filter:
+            id: filterb1bd
             expression:
               simple:
-                id: simple-d030
-                expression: |
-                  {
-                      "id": "${jsonpath('$.entity_id')}",
-                      "type": "DeviceMeasurement",
-                      "name": "${jsonpath('$.attributes.friendly_name')}",
-                      "measurementType": "${jsonpath('$.attributes.device_class', true)}",
-                      "numValue": ${jsonpath('$.state')},
-                      "unit": "${jsonpath('$.attributes.unit_of_measurement')}",
-                      "dateObserved": "${jsonpath('$.last_updated')}"
-                  }
-        - toD:
-            id: toD-12bf
-            uri: >-
-              kamelet:kafka-not-secured-sink?bootstrapServers=192.168.1.11:9092&topic=${header.KafkaTopic}
-- route:
-    id: Temperature consumer
-    nodePrefixId: route-10c
-    from:
-      id: from-b299
-      uri: kafka
-      parameters:
-        topic: temperature
-        brokers: 192.168.1.11:9092
-      steps:
-        - to:
-            id: to-b925
-            uri: kamelet:log-sink
-- route:
-    id: Humidity consumer
-    nodePrefixId: route-11c
-    from:
-      id: from-b209
-      uri: kafka
-      parameters:
-        topic: humidity
-        brokers: 192.168.1.11:9092
-      steps:
-        - to:
-            id: to-b955
-            uri: kamelet:log-sink
-- route:
-    id: Connectivity consumer
-    nodePrefixId: route-844
-    from:
-      id: from-eea6
-      uri: kafka
-      parameters:
-        topic: data_rate
-        brokers: 192.168.1.11:9092
-      steps:
-        - to:
-            id: to-a845
-            uri: kamelet:log-sink
-- route:
-    id: Other consumer
-    nodePrefixId: route-b7a
-    from:
-      id: from-4fab
-      uri: kafka
-      parameters:
-        topic: other
-        brokers: 192.168.1.11:9092
-      steps:
-        - to:
-            id: to-df9b
-            uri: kamelet:log-sink
+                id: simple3c5d
+                expression: ${body} != null
+            steps:
+              - marshal:
+                  id: marshalf9d1
+                  json:
+                    id: jsonb881
+                    library: Jackson
+              - convertBodyTo:
+                  id: convertBodyTo423a
+                  type: java.lang.String
+              - toD:
+                  id: toDa016
+                  uri: kafka:${header.targetTopic}?brokers=broker:29092
+              - removeHeader:
+                  id: removeHeader3752
+                  name: targetTopic
