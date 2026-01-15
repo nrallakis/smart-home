@@ -220,3 +220,63 @@ flowchart LR
         end
     end
 ```
+
+```mermaid
+---
+config:
+  look: classic
+  theme: redux
+---
+graph TD
+    %% Styling Definitions
+    classDef highlight fill:#fffbe6,stroke:#f1c40f,stroke-width:4px,color:#000;
+    classDef umbrella fill:#fff,stroke:#b22222,stroke-width:2px;
+    classDef domain fill:#fff,stroke:#d3d3d3,stroke-width:1px;
+    classDef subject fill:#fff,stroke:#d3d3d3,stroke-width:1px;
+    classDef lifecycle fill:#fff,stroke:#b22222,stroke-width:2px;
+
+    %% Nodes
+    Umbrella["<b>data-models</b><br/>UMBRELLA REPO"]:::umbrella
+
+    subgraph DOMAINS ["DOMAINS REPOSITORIES"]
+        direction LR
+        Water["Smart<br/>Water"]:::domain
+        Cities["Smart<br/>Cities"]:::domain
+        Sensoring["<b>Smart<br/>Sensoring</b>"]:::highlight
+        Agri["Smart<br/>Agrifood"]:::domain
+        Energy["Smart<br/>Energy"]:::domain
+        Robot["Smart<br/>Robotics"]:::domain
+    end
+
+    subgraph SUBJECTS ["SUBJECTS' REPOSITORIES"]
+        direction LR
+        S1["Subject 1<br/>(sewage)"]:::subject
+        Device["<b>Device</b><br/>(dataModel.Device)"]:::highlight
+        S3["Subject 3<br/>(weather)"]:::subject
+        OCF["OCF<br/>(dataModel.OCF)"]:::subject
+    end
+
+    subgraph MODELS ["DATA MODELS (Folders)"]
+        direction LR
+        DeviceMeasurement["<b>DeviceMeasurement</b>"]:::highlight
+        Camera["Camera"]:::subject
+        Modbus["Modbus"]:::subject
+        Other["..."]:::subject
+    end
+
+    %% Connections
+    Umbrella --- Water & Cities & Agri & Energy & Robot
+    Umbrella === Sensoring
+    
+    Sensoring === Device
+    Sensoring --- OCF
+    
+    Device === DeviceMeasurement
+    Device --- Camera & Modbus & Other
+
+    Water --- S1
+    Cities --- S1
+
+    %% Highlighting the link lines (CSS-like targeting)
+    linkStyle 5,6,8 stroke:#f1c40f,stroke-width:5px;
+```
